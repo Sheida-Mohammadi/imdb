@@ -4,11 +4,19 @@
 
 
 import requests
-import numpy as np
+
 import pandas as pd
 from bs4 import BeautifulSoup
-#from selenium import webdriver
-#import time
+import nltk
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk.tokenize import sent_tokenize, word_tokenize
+import re
+import string
+import matplotlib.pyplot as plt
+import seaborn as sns
+from nltk.corpus import stopwords
+from wordcloud import WordCloud
+
 
 URL_FILMS_BASE = 'https://www.imdb.com'
 URL_FILMS_LISTE = '/title/tt0111161/?pf_rd_m=A2FGELUUNOQJNL&pf_rd_p=e31d89dd-322d-4646-8962-327b42fe94b1&pf_rd_r=ZEZSWF427KDNCR9JF090&pf_rd_s=center-1&pf_rd_t=15506&pf_rd_i=top&ref_=chttp_tt_1'
@@ -57,14 +65,6 @@ print(liste)
 
 
 def get_links_to_films(root_html):
-    '''
-        Extract book links from URL_BOOK_LISTE
-
-        :param root_html: BeautifulSoup Element that contains all books links
-        :type book_html: bs4.BeautifulSoup
-        :return: List of all book links in the page
-        :rtype: list(str)
-    '''
     films_links = []
     all_href = root_html.find_all("a", href=True)
     for i in all_href:
@@ -325,7 +325,7 @@ liste_duree1
 
 
 liste_duree2 = []
-import re
+
 
 i = 0
 while i < len(liste_duree1):
@@ -339,7 +339,7 @@ while i < len(liste_duree1):
 
 
 liste_duree = []
-import re
+
 
 i = 0
 while i < len(liste_duree2):
@@ -401,7 +401,7 @@ for link in films_links:
 
 
 liste_genre2 = []
-import re
+
 
 i = 0
 while i < len(liste_genre1):
@@ -415,7 +415,7 @@ while i < len(liste_genre1):
 
 
 liste_genre = []
-import re
+
 
 i = 0
 while i < len(liste_genre2):
@@ -474,7 +474,7 @@ for link in films_links:
 
 
 liste_actor = []
-import re
+
 
 i = 0
 while i < len(liste_actor1):
@@ -511,8 +511,6 @@ def extract_director(book_html):
                 director = D.text[10:]
             elif D.h4.text == "Directors:":
                 director = D.text[11:]
-
-
     except:
         director = None
     return director
@@ -546,7 +544,7 @@ liste_director1
 
 
 liste_director = []
-import re
+
 
 i = 0
 while i < len(liste_director1):
@@ -1030,8 +1028,7 @@ df_mois_sortie["Nb_sortie"] = df_mois_sortie[0]
 # In[506]:
 
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 plt.figure(figsize=(10, 6))
 sns.barplot(x=df_mois_sortie['mois de sortie'], y=df_mois_sortie['Nb_sortie'], palette="Reds_r")
@@ -1077,8 +1074,7 @@ df_duree["Nb_duree"] = df_duree[0]
 # In[523]:
 
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 plt.figure(figsize=(30, 16))
 sns.barplot(x=df_duree['durée_minutes'], y=df_duree['Nb_duree'], palette="rocket")
@@ -1096,135 +1092,6 @@ plt.tight_layout()
 
 # ## #Genres
 
-# In[534]:
-
-
-# (df["genre"].str.contains("Drama")).value_counts()
-
-
-# In[532]:
-
-
-# (df["genre"].str.contains("Crime")).value_counts()
-
-
-# In[535]:
-
-
-# (df["genre"].str.contains("Action")).value_counts()
-
-
-# In[536]:
-
-
-# (df["genre"].str.contains("Thriller")).value_counts()
-
-
-# In[537]:
-
-
-# (df["genre"].str.contains("Romance")).value_counts()
-
-
-# In[545]:
-
-
-# (df["genre"].str.contains("Mystery")).value_counts()
-
-
-# In[547]:
-
-
-# (df["genre"].str.contains("Western")).value_counts()
-
-
-# In[552]:
-
-
-# (df["genre"].str.contains("Adventure")).value_counts()
-
-
-# In[553]:
-
-
-# (df["genre"].str.contains("Fantasy")).value_counts()
-
-
-# In[554]:
-
-
-# (df["genre"].str.contains("Horror")).value_counts()
-
-
-# In[555]:
-
-
-# (df["genre"].str.contains("Comedy")).value_counts()
-
-
-# In[556]:
-
-
-# (df["genre"].str.contains("Sci-Fi")).value_counts()
-
-
-# In[557]:
-
-
-# (df["genre"].str.contains("Biography")).value_counts()
-
-
-# In[558]:
-
-
-# (df["genre"].str.contains("History")).value_counts()
-
-
-# In[559]:
-
-
-# (df["genre"].str.contains("Family")).value_counts()
-
-
-# In[560]:
-
-
-# (df["genre"].str.contains("War")).value_counts()
-
-
-# In[561]:
-
-
-# (df["genre"].str.contains("Music")).value_counts()
-
-
-# In[562]:
-
-
-# (df["genre"].str.contains("Animation")).value_counts()
-
-
-# In[563]:
-
-
-'''df["Romance"] = (df["genre"].str.contains("Romance")).astype(int)
-df["Thriller"] = (df["genre"].str.contains("Thriller")).astype(int)
-df["Action"] = (df["genre"].str.contains("Action")).astype(int)
-df["Crime"] = (df["genre"].str.contains("Crime")).astype(int)
-df["Drama"] = (df["genre"].str.contains("Drama")).astype(int)
-df["Mystery"] = (df["genre"].str.contains("Mystery")).astype(int)
-df["Western"] = (df["genre"].str.contains("Western")).astype(int)
-df["Adventure"] = (df["genre"].str.contains("Adventure")).astype(int)
-df["Fantasy"] = (df["genre"].str.contains("Fantasy")).astype(int)
-df["Horror"] = (df["genre"].str.contains("Horror")).astype(int)
-df["Comedy"] = (df["genre"].str.contains("Comedy")).astype(int)
-df["Sci-Fi"] = (df["genre"].str.contains("Sci-Fi")).astype(int)
-df["Biography"] = (df["genre"].str.contains("Biography")).astype(int)
-df["History"] = (df["genre"].str.contains("History")).astype(int)
-df["Family"] = (df["genre"].str.contains("Family")).astype(int)
-df["War"] = (df["genre"].str.contains("War")).astype(int)
-df["Music"] = (df["genre"].str.contains("Music")).astype(int)
-df["Animation"] = (df["genre"].str.contains("Animation")).astype(int)'''
 
 # In[564]:
 
@@ -1260,9 +1127,6 @@ df_real["Nb_réal"] = df_real[0]
 
 # In[600]:
 
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 plt.figure(figsize=(45, 30))
 sns.barplot(x=df_real['réalisateur'], y=df_real['Nb_réal'], palette="rocket")
@@ -1326,9 +1190,6 @@ df_budget["Nb_budget"] = df_budget[0]
 # In[621]:
 
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 plt.figure(figsize=(45, 30))
 sns.barplot(x=df_budget["budget"], y=df_budget["Nb_budget"], palette="Blues_r")
 plt.xlabel('\nBudget', fontsize=16, color='#2980b9')
@@ -1337,31 +1198,16 @@ plt.title("La fréquence des budgets utilisés\n", fontsize=18, color='#3742fa')
 plt.xticks(rotation=45)
 plt.tight_layout()
 
-# In[ ]:
-
-
-# In[ ]:
-
-
-# In[ ]:
 
 
 # ## NLP
 
-# In[ ]:
 
-
-get_ipython().system('pip install nltk')
 
 # In[331]:
 
 
-import nltk
-from nltk.stem import PorterStemmer, WordNetLemmatizer
-from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
-import re
-import string
+
 
 
 # In[696]:
@@ -1392,39 +1238,28 @@ df['users_reviews'] = df['users_reviews'].apply(custom_preprocessor)
 # In[ ]:
 
 
-nltk.download()
+#nltk.download()
 
 # In[311]:
 
 
-# Installation bibliothèque gensim
-pip
-install
-gensim
-
-# In[313]:
 
 
-# Installation bibliothèque python-Levenshtein
-pip
-install
-python - Levenshtein
-
-# In[314]:
 
 
-# import des bibliothèques utiles
 
-from gensim.models import Word2Vec
-import nltk
-from gensim.models import KeyedVectors
+# In[771]:
 
-from nltk.cluster import KMeansClusterer
-import numpy as np
 
-from sklearn import cluster
-from sklearn import metrics
+stop_words = set(stopwords.words("english"))
 
+# add words that aren't in the NLTK stopwords list
+new_stopwords = ['None', 'rififi', 'krzysztof', 'also', 'good', 'best', 'however', 'long', 'x', 'still', 'go', 'see',
+                 'like', 'although', 'usually', 'movies', 'class', 'one', 'puzo', 'seen', 'want', 'columns', 'rows',
+                 'eyes', 'movie', 'film']
+new_stopwords_list = stop_words.union(new_stopwords)
+
+print(new_stopwords_list)
 # # Les genres les plus fréquents
 
 # In[799]:
@@ -1444,14 +1279,6 @@ plt.axis("off")
 plt.show()
 
 # # Acteurs les plus fréquents
-
-# In[378]:
-
-
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
 
 # In[801]:
 
@@ -1494,20 +1321,6 @@ plt.show()
 
 # ## Story line
 
-# In[771]:
-
-
-from nltk.corpus import stopwords
-
-stop_words = set(stopwords.words("english"))
-
-# add words that aren't in the NLTK stopwords list
-new_stopwords = ['None', 'rififi', 'krzysztof', 'also', 'good', 'best', 'however', 'long', 'x', 'still', 'go', 'see',
-                 'like', 'although', 'usually', 'movies', 'class', 'one', 'puzo', 'seen', 'want', 'columns', 'rows',
-                 'eyes', 'movie', 'film']
-new_stopwords_list = stop_words.union(new_stopwords)
-
-print(new_stopwords_list)
 
 # In[768]:
 
