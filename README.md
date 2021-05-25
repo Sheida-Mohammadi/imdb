@@ -13,3 +13,12 @@ Our main type of Data collected from this section was :
 - The actors that played in the moovie
 - The realisator
 - The moovie metascore
+
+You will see some beautifull visualisation of each type of Data
+You willget an idea of what can be the next big moovie !!
+
+To lunch the code on your computer you just have to :
+'''
+git clone https://github.com/Sheida-Mohammadi/imdb.git
+
+'''
