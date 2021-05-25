@@ -935,3 +935,613 @@ df_final
 
 
 df_final.info()
+
+# ## Remplacer les valeurs manquantes
+
+# In[481]:
+
+
+df_final["metascore"].hist()
+
+# In[482]:
+
+
+df_final["metascore"].mean()
+
+# In[795]:
+
+
+df_final["metascore"] = df_final["metascore"].fillna(df_final["metascore"].mean())
+
+# ## Ajout colonne moyenne des notes et metascore
+
+# In[796]:
+
+
+df_final["notes_moyenne"] = ((df_final["notes_proportionnelles"] + df_final["metascore"]) / 2)
+
+# In[487]:
+
+
+df_final.head()
+
+# In[488]:
+
+
+df_final["notes_moyenne"].describe()
+
+# In[797]:
+
+
+(df_final["notes_moyenne"] >= 85).value_counts()
+
+# ## On travaille sur le dataset où il y a les notes moyennes au dessus de 85
+
+# In[798]:
+
+
+df = df_final[(df_final["notes_moyenne"] >= 85)]
+
+# In[683]:
+
+
+df.head()
+
+# In[499]:
+
+
+# La médiane de notes
+mediane_notes = df["notes_moyenne"].mode()
+print("La médiane des notes est : " + format(mediane_notes))
+
+# La moyenne des notes
+moyenne_notes = df["notes_moyenne"].mean()
+print("La moyenne des notes est : " + format(moyenne_notes))
+
+# ## On affiche le nombre de votes en moyenne
+
+# In[503]:
+
+
+# Affiche le de nombre de votes en moyenne
+df["nombre de votes"].mean()
+
+# ## Mois de sortie de films
+
+# In[504]:
+
+
+# On voit où sont sortie le plus de films top rated
+
+df_mois_sortie = (df
+                  .groupby(["mois de sortie"])
+                  .size()
+                  .reset_index()
+
+                  )
+df_mois_sortie
+
+# In[505]:
+
+
+# On change le nom de la colonne en Nb_sortie
+df_mois_sortie["Nb_sortie"] = df_mois_sortie[0]
+
+# In[506]:
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x=df_mois_sortie['mois de sortie'], y=df_mois_sortie['Nb_sortie'], palette="Reds_r")
+plt.xlabel('\nMois', fontsize=15, color='#c0392b')
+plt.ylabel("Nombre de sortie de films\n", fontsize=15, color='#c0392b')
+plt.title("Nombre de sortie de films par mois\n", fontsize=18, color='#e74c3c')
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# --> On observe que les mois de sortie les plus intéressant sont Septembre, Octobre et Mars
+
+# ## Durée
+
+# In[510]:
+
+
+# On observe la répartition de la colonne durée_minutes
+df['durée_minutes'].hist(color="orange")
+
+# In[511]:
+
+
+# Moyenne des durée de films
+df['durée_minutes'].mean()
+
+# In[512]:
+
+
+df_duree = (df
+            .groupby(["durée_minutes"])
+            .size()
+            .reset_index()
+
+            )
+df_duree
+
+# In[513]:
+
+
+# On change le nom de la colonne en Nb_duree
+df_duree["Nb_duree"] = df_duree[0]
+
+# In[523]:
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(30, 16))
+sns.barplot(x=df_duree['durée_minutes'], y=df_duree['Nb_duree'], palette="rocket")
+plt.xlabel('\nDurée', fontsize=15, color='#2980b9')
+plt.ylabel("Nombre de films\n", fontsize=15, color='#2980b9')
+plt.title("Nombre de films par durée\n", fontsize=18, color='#3742fa')
+plt.text(12.5, 3, r'MAX', size='xx-large', weight='extra bold')
+plt.text(6.25, 3, r'MAX', size='xx-large', weight='extra bold')
+plt.text(2.5, 3, r'MAX', size='xx-large', weight='extra bold')
+plt.text(22.5, 3, r'MAX', size='xx-large', weight='extra bold')
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# --> On observe que les meilleurs films ont pour durée 88 min, 96 min, 103 min et enfin 118 min
+
+# ## #Genres
+
+# In[534]:
+
+
+# (df["genre"].str.contains("Drama")).value_counts()
+
+
+# In[532]:
+
+
+# (df["genre"].str.contains("Crime")).value_counts()
+
+
+# In[535]:
+
+
+# (df["genre"].str.contains("Action")).value_counts()
+
+
+# In[536]:
+
+
+# (df["genre"].str.contains("Thriller")).value_counts()
+
+
+# In[537]:
+
+
+# (df["genre"].str.contains("Romance")).value_counts()
+
+
+# In[545]:
+
+
+# (df["genre"].str.contains("Mystery")).value_counts()
+
+
+# In[547]:
+
+
+# (df["genre"].str.contains("Western")).value_counts()
+
+
+# In[552]:
+
+
+# (df["genre"].str.contains("Adventure")).value_counts()
+
+
+# In[553]:
+
+
+# (df["genre"].str.contains("Fantasy")).value_counts()
+
+
+# In[554]:
+
+
+# (df["genre"].str.contains("Horror")).value_counts()
+
+
+# In[555]:
+
+
+# (df["genre"].str.contains("Comedy")).value_counts()
+
+
+# In[556]:
+
+
+# (df["genre"].str.contains("Sci-Fi")).value_counts()
+
+
+# In[557]:
+
+
+# (df["genre"].str.contains("Biography")).value_counts()
+
+
+# In[558]:
+
+
+# (df["genre"].str.contains("History")).value_counts()
+
+
+# In[559]:
+
+
+# (df["genre"].str.contains("Family")).value_counts()
+
+
+# In[560]:
+
+
+# (df["genre"].str.contains("War")).value_counts()
+
+
+# In[561]:
+
+
+# (df["genre"].str.contains("Music")).value_counts()
+
+
+# In[562]:
+
+
+# (df["genre"].str.contains("Animation")).value_counts()
+
+
+# In[563]:
+
+
+'''df["Romance"] = (df["genre"].str.contains("Romance")).astype(int)
+df["Thriller"] = (df["genre"].str.contains("Thriller")).astype(int)
+df["Action"] = (df["genre"].str.contains("Action")).astype(int)
+df["Crime"] = (df["genre"].str.contains("Crime")).astype(int)
+df["Drama"] = (df["genre"].str.contains("Drama")).astype(int)
+df["Mystery"] = (df["genre"].str.contains("Mystery")).astype(int)
+df["Western"] = (df["genre"].str.contains("Western")).astype(int)
+df["Adventure"] = (df["genre"].str.contains("Adventure")).astype(int)
+df["Fantasy"] = (df["genre"].str.contains("Fantasy")).astype(int)
+df["Horror"] = (df["genre"].str.contains("Horror")).astype(int)
+df["Comedy"] = (df["genre"].str.contains("Comedy")).astype(int)
+df["Sci-Fi"] = (df["genre"].str.contains("Sci-Fi")).astype(int)
+df["Biography"] = (df["genre"].str.contains("Biography")).astype(int)
+df["History"] = (df["genre"].str.contains("History")).astype(int)
+df["Family"] = (df["genre"].str.contains("Family")).astype(int)
+df["War"] = (df["genre"].str.contains("War")).astype(int)
+df["Music"] = (df["genre"].str.contains("Music")).astype(int)
+df["Animation"] = (df["genre"].str.contains("Animation")).astype(int)'''
+
+# In[564]:
+
+
+df
+
+# In[ ]:
+
+
+# In[ ]:
+
+
+# ## Réalisateurs
+
+# In[591]:
+
+
+# On voit les réalisateurs les plus souvent utilisés
+
+df_real = (df
+           .groupby(["réalisateur"])
+           .size()
+           .reset_index()
+
+           )
+df_real
+
+# In[592]:
+
+
+# On change le nom de la colonne en Nb_réal
+df_real["Nb_réal"] = df_real[0]
+
+# In[600]:
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(45, 30))
+sns.barplot(x=df_real['réalisateur'], y=df_real['Nb_réal'], palette="rocket")
+plt.xlabel('\nRéalisateurs', fontsize=16, color='#2980b9')
+plt.ylabel("Nombre de réalisateurs employés\n", fontsize=15, color='#2980b9')
+plt.title("Les réalisateurs qui ont fait les films les mieux notés\n", fontsize=18, color='#3742fa')
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# ## Budget
+
+# In[604]:
+
+
+# On enlève le "$" dans la colonne budget et les ","
+df["budget"] = [(str(i).replace("$", "")) for i in df["budget"]]
+df["budget"] = [(str(i).replace(",", "")) for i in df["budget"]]
+
+# In[607]:
+
+
+# On change le type de budget
+df["budget"] = df["budget"].astype(float)
+
+# In[610]:
+
+
+df["budget"].hist(color="skyblue")
+
+# In[611]:
+
+
+df["budget"].mean()
+
+# In[615]:
+
+
+df["budget"] = df["budget"].fillna(df["budget"].mean())
+
+# In[616]:
+
+
+df["budget"].isna().sum()
+
+# In[617]:
+
+
+df_budget = (df
+             .groupby(["budget"])
+             .size()
+             .reset_index()
+
+             )
+df_budget
+
+# In[618]:
+
+
+df_budget["Nb_budget"] = df_budget[0]
+
+# In[621]:
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(45, 30))
+sns.barplot(x=df_budget["budget"], y=df_budget["Nb_budget"], palette="Blues_r")
+plt.xlabel('\nBudget', fontsize=16, color='#2980b9')
+plt.ylabel("Nombre de budget utilisé\n", fontsize=15, color='#2980b9')
+plt.title("La fréquence des budgets utilisés\n", fontsize=18, color='#3742fa')
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# In[ ]:
+
+
+# In[ ]:
+
+
+# In[ ]:
+
+
+# ## NLP
+
+# In[ ]:
+
+
+get_ipython().system('pip install nltk')
+
+# In[331]:
+
+
+import nltk
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+import re
+import string
+
+
+# In[696]:
+
+
+def custom_preprocessor(text):
+    '''
+    Make text lowercase, remove text in square brackets,remove links,remove special characters
+    and remove words containing numbers.
+    '''
+
+    text = re.sub('\[.*?\]', '', text)
+    text = re.sub("\\W", " ", text)  # remove special chars
+    text = re.sub('https?://\S+|www\.\S+', '', text)
+    text = re.sub('<.*?>+', '', text)
+    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
+    text = re.sub('\n', '', text)
+    text = re.sub('\w*\d\w*', '', text)
+
+    return text
+
+
+# In[640]:
+
+
+df['users_reviews'] = df['users_reviews'].apply(custom_preprocessor)
+
+# In[ ]:
+
+
+nltk.download()
+
+# In[311]:
+
+
+# Installation bibliothèque gensim
+pip
+install
+gensim
+
+# In[313]:
+
+
+# Installation bibliothèque python-Levenshtein
+pip
+install
+python - Levenshtein
+
+# In[314]:
+
+
+# import des bibliothèques utiles
+
+from gensim.models import Word2Vec
+import nltk
+from gensim.models import KeyedVectors
+
+from nltk.cluster import KMeansClusterer
+import numpy as np
+
+from sklearn import cluster
+from sklearn import metrics
+
+# # Les genres les plus fréquents
+
+# In[799]:
+
+
+wordcloud = WordCloud(background_color='white',
+                      stopwords=new_stopwords_list,
+                      max_words=300,
+                      max_font_size=40,
+                      scale=6,
+                      random_state=1).generate(" ".join(df["genre"]))
+
+plt.figure(1, figsize=(30, 30))
+plt.imshow(wordcloud)
+plt.axis("off")
+
+plt.show()
+
+# # Acteurs les plus fréquents
+
+# In[378]:
+
+
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+
+# In[801]:
+
+
+df['acteurs'] = [(str(i).replace(" ", "")) for i in df['acteurs']]
+
+# In[802]:
+
+
+wordcloud = WordCloud(background_color='white',
+                      stopwords=new_stopwords_list,
+                      max_words=300,
+                      max_font_size=40,
+                      scale=6,
+                      random_state=1).generate(" ".join(df["acteurs"]))
+
+plt.figure(1, figsize=(30, 30))
+plt.imshow(wordcloud)
+plt.axis("off")
+
+plt.show()
+
+# ## Réalisateurs
+
+# In[777]:
+
+
+wordcloud = WordCloud(background_color='white',
+                      stopwords=new_stopwords_list,
+                      max_words=300,
+                      max_font_size=40,
+                      scale=6,
+                      random_state=1).generate(" ".join(df["réalisateur"]))
+
+plt.figure(1, figsize=(30, 30))
+plt.imshow(wordcloud)
+plt.axis("off")
+
+plt.show()
+
+# ## Story line
+
+# In[771]:
+
+
+from nltk.corpus import stopwords
+
+stop_words = set(stopwords.words("english"))
+
+# add words that aren't in the NLTK stopwords list
+new_stopwords = ['None', 'rififi', 'krzysztof', 'also', 'good', 'best', 'however', 'long', 'x', 'still', 'go', 'see',
+                 'like', 'although', 'usually', 'movies', 'class', 'one', 'puzo', 'seen', 'want', 'columns', 'rows',
+                 'eyes', 'movie', 'film']
+new_stopwords_list = stop_words.union(new_stopwords)
+
+print(new_stopwords_list)
+
+# In[768]:
+
+
+wordcloud = WordCloud(background_color='white',
+                      stopwords=new_stopwords_list,
+                      max_words=300,
+                      max_font_size=40,
+                      scale=6,
+                      random_state=1).generate(" ".join(df["story_line"]))
+
+plt.figure(1, figsize=(30, 30))
+plt.imshow(wordcloud)
+plt.axis("off")
+
+plt.show()
+
+# ## Users reviews
+
+# In[772]:
+
+
+wordcloud = WordCloud(background_color='white',
+                      stopwords=new_stopwords_list,
+                      max_words=300,
+                      max_font_size=40,
+                      scale=6,
+                      random_state=1).generate(" ".join(df["users_reviews"]))
+
+plt.figure(1, figsize=(30, 30))
+plt.imshow(wordcloud)
+plt.axis("off")
+
+plt.show()
+
+# In[ ]:
+
