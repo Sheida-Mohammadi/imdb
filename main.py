@@ -828,70 +828,46 @@ len(liste_story_line)
 
 # # DataFrame:
 
-# In[782]:
-
-
+# On créé le dataframe
 df = pd.DataFrame(
     {"titres": liste_titres, "date": all_date, "mois de sortie": liste_mois, "notes": liste_notes, "durée": liste_duree,
      "genre": liste_genre, "acteurs": liste_actor, "story_line": liste_story_line, "réalisateur": liste_director,
      "nombre de votes": liste_nb_votant, "users_reviews": liste_reviews, "metascore": liste_metascore1,
      "budget": liste_budget1})
 
-# In[784]:
-
-
+# On garde que les lignes contenant '\n'
 df["metascore"] = df[["metascore"]][df["metascore"].str.contains('\n', regex=False)]
 
-# In[785]:
-
-
+# On retire les '\n' des metascores
 df['metascore'] = df['metascore'].str.replace(r'\n', '')
 
-# In[786]:
-
-
+# On change le type de 'metascore'
 df['metascore'].astype(float)
 
-# In[787]:
-
-
+# On attribue à df_final le dataframe df
 df_final = df
 
-# In[788]:
-
-
+# On change le type de 'metascore'
 df_final["metascore"] = df_final["metascore"].astype(float)
-df_final.info()
 
 # #### On nettoie les données
-
-# In[789]:
-
 
 # Dans la colonne "nombre de votes", pour chaque milliers, les valeurs sont séparées par des ",".
 # Ici, on enlève les virgules
 df_final["nombre de votes"] = [(str(i).replace(",", "")) for i in df_final["nombre de votes"]]
 
-# In[790]:
-
-
 # On change le type de notes
 df_final["notes"] = df_final["notes"].astype(float)
 
-# In[791]:
-
-
+# On ajoute une colonne 'notes_proportionnelles' équivalente à la note sur 100
 df_final["notes_proportionnelles"] = ((df_final['notes']) * 10)
-
-# In[792]:
-
 
 # On enlève le "\n" dans la colonne budget
 df_final["budget"] = [(str(i).replace("\n", "")) for i in df_final["budget"]]
 
-# In[793]:
+# On traite la colonne durée pour tout avoir en minute
 
-
+# On enlève le 'h' et le 'min' dans la colonne 'durée'.
 df_final["durée"] = [(str(i).replace("h", "")) for i in df_final["durée"]]
 df_final["durée"] = [(str(i).replace("min", "")) for i in df_final["durée"]]
 
@@ -919,74 +895,36 @@ df_final.drop('min_dizaine', axis=1, inplace=True)
 df_final.drop('min_unite', axis=1, inplace=True)
 df_final.drop('min', axis=1, inplace=True)
 
-# In[794]:
+# On enlève les espaces entre les noms et prénoms des acteurs.
+df['acteurs'] = [(str(i).replace(" ", "")) for i in df['acteurs']]
 
-
+# On garde que les lignes où il y à des $ dans le budget.
 df_final["budget"] = df_final[["budget"]][df_final["budget"].str.contains('$', regex=False)]
 
-# In[479]:
-
-
+# On affiche le dataset
 df_final
-
-# In[480]:
-
-
-df_final.info()
 
 # ## Remplacer les valeurs manquantes
 
-# In[481]:
+# On affiche la moyenne des notes de metascore
+metascore_mean = df_final["metascore"].mean()
+print('La moyenne des metascores est de :' + format(metascore_mean))
 
-
-df_final["metascore"].hist()
-
-# In[482]:
-
-
-df_final["metascore"].mean()
-
-# In[795]:
-
-
+# On remplie les valeurs manquantes par la moyenne des metascores.
 df_final["metascore"] = df_final["metascore"].fillna(df_final["metascore"].mean())
 
-# ## Ajout colonne moyenne des notes et metascore
+# ## Ajout colonne moyenne :des notes et metascore
 
-# In[796]:
-
-
+# On créé une colonne 'notes_moyennes' : moyennes des 2 autres notes
 df_final["notes_moyenne"] = ((df_final["notes_proportionnelles"] + df_final["metascore"]) / 2)
 
-# In[487]:
-
-
-df_final.head()
-
-# In[488]:
-
-
-df_final["notes_moyenne"].describe()
-
-# In[797]:
-
-
+# On calcule le nombre de notes_moyennes au dessus de 85.
 (df_final["notes_moyenne"] >= 85).value_counts()
 
 # ## On travaille sur le dataset où il y a les notes moyennes au dessus de 85
 
-# In[798]:
-
-
+# On attribue à df le dataframe contenant que les lignes où les notes moyennes sont au dessu de 85.
 df = df_final[(df_final["notes_moyenne"] >= 85)]
-
-# In[683]:
-
-
-df.head()
-
-# In[499]:
-
 
 # La médiane de notes
 mediane_notes = df["notes_moyenne"].mode()
@@ -998,39 +936,26 @@ print("La moyenne des notes est : " + format(moyenne_notes))
 
 # ## On affiche le nombre de votes en moyenne
 
-# In[503]:
-
-
 # Affiche le de nombre de votes en moyenne
 df["nombre de votes"].mean()
 
 # ## Mois de sortie de films
 
-# In[504]:
-
-
-# On voit où sont sortie le plus de films top rated
-
+# On voit quand sont sortie le plus de films top rated
+#On créé un dataframe où les mois de sorties sont regrouppés entre eux.
 df_mois_sortie = (df
                   .groupby(["mois de sortie"])
                   .size()
                   .reset_index()
 
                   )
-df_mois_sortie
-
-# In[505]:
-
 
 # On change le nom de la colonne en Nb_sortie
 df_mois_sortie["Nb_sortie"] = df_mois_sortie[0]
 
-# In[506]:
+# On affiche le graphe des nombres de films sorties par mois.
 
-
-
-
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(45, 30))
 sns.barplot(x=df_mois_sortie['mois de sortie'], y=df_mois_sortie['Nb_sortie'], palette="Reds_r")
 plt.xlabel('\nMois', fontsize=15, color='#c0392b')
 plt.ylabel("Nombre de sortie de films\n", fontsize=15, color='#c0392b')
@@ -1042,41 +967,28 @@ plt.tight_layout()
 
 # ## Durée
 
-# In[510]:
-
-
 # On observe la répartition de la colonne durée_minutes
-df['durée_minutes'].hist(color="orange")
-
-# In[511]:
-
+#df['durée_minutes'].hist(color="orange")
 
 # Moyenne des durée de films
-df['durée_minutes'].mean()
+duree_moy = df['durée_minutes'].mean()
+print("La durée moyenne des films est de :" + format(duree_moy))
 
-# In[512]:
-
-
+#On créé un dataframe où les durée sont regrouppées entre durées identiques.
 df_duree = (df
             .groupby(["durée_minutes"])
             .size()
             .reset_index()
 
             )
-df_duree
-
-# In[513]:
-
 
 # On change le nom de la colonne en Nb_duree
 df_duree["Nb_duree"] = df_duree[0]
 
-# In[523]:
 
+# On affiche le graphe des nombres de films par durée
 
-
-
-plt.figure(figsize=(30, 16))
+plt.figure(figsize=(45, 30))
 sns.barplot(x=df_duree['durée_minutes'], y=df_duree['Nb_duree'], palette="rocket")
 plt.xlabel('\nDurée', fontsize=15, color='#2980b9')
 plt.ylabel("Nombre de films\n", fontsize=15, color='#2980b9')
@@ -1090,43 +1002,24 @@ plt.tight_layout()
 
 # --> On observe que les meilleurs films ont pour durée 88 min, 96 min, 103 min et enfin 118 min
 
-# ## #Genres
-
-
-# In[564]:
-
-
-df
-
-# In[ ]:
-
-
-# In[ ]:
-
 
 # ## Réalisateurs
 
-# In[591]:
-
-
 # On voit les réalisateurs les plus souvent utilisés
-
+#On créé un dataframe où les réalisateurs sont regroupés par les noms identiques.
 df_real = (df
            .groupby(["réalisateur"])
            .size()
            .reset_index()
 
            )
-df_real
 
-# In[592]:
 
 
 # On change le nom de la colonne en Nb_réal
 df_real["Nb_réal"] = df_real[0]
 
-# In[600]:
-
+# On affiche le graphe des réalisateurs qui ont fait les films les mieux notés
 
 plt.figure(figsize=(45, 30))
 sns.barplot(x=df_real['réalisateur'], y=df_real['Nb_réal'], palette="rocket")
@@ -1138,58 +1031,35 @@ plt.tight_layout()
 
 # ## Budget
 
-# In[604]:
-
 
 # On enlève le "$" dans la colonne budget et les ","
 df["budget"] = [(str(i).replace("$", "")) for i in df["budget"]]
 df["budget"] = [(str(i).replace(",", "")) for i in df["budget"]]
 
-# In[607]:
 
-
-# On change le type de budget
+# On change le type de budget (de str à float)
 df["budget"] = df["budget"].astype(float)
 
-# In[610]:
 
-
-df["budget"].hist(color="skyblue")
-
-# In[611]:
-
-
-df["budget"].mean()
-
-# In[615]:
-
-
+# On remplie les valeurs manquantes par la moyenne des budgets.
 df["budget"] = df["budget"].fillna(df["budget"].mean())
 
-# In[616]:
 
-
+# On vérifie qu'il n'y a plus de valeurs manquantes dans la colonne budget
 df["budget"].isna().sum()
 
-# In[617]:
-
-
+#On créé un dataframe où les budgets sont regroupés par les sommes identiques.
 df_budget = (df
              .groupby(["budget"])
              .size()
              .reset_index()
 
              )
-df_budget
 
-# In[618]:
-
-
+# On renome la colonne en Nb_budget
 df_budget["Nb_budget"] = df_budget[0]
 
-# In[621]:
-
-
+# On affiche le graphe représentant la fréquence des budgets utilisés
 plt.figure(figsize=(45, 30))
 sns.barplot(x=df_budget["budget"], y=df_budget["Nb_budget"], palette="Blues_r")
 plt.xlabel('\nBudget', fontsize=16, color='#2980b9')
@@ -1202,17 +1072,7 @@ plt.tight_layout()
 
 # ## NLP
 
-
-
-# In[331]:
-
-
-
-
-
-# In[696]:
-
-
+# On définit une fonction permettant de traiter le texte
 def custom_preprocessor(text):
     '''
     Make text lowercase, remove text in square brackets,remove links,remove special characters
@@ -1230,40 +1090,25 @@ def custom_preprocessor(text):
     return text
 
 
-# In[640]:
+# On applique la fonction précédente à la colonne users_reviews
 
 
 df['users_reviews'] = df['users_reviews'].apply(custom_preprocessor)
 
-# In[ ]:
-
-
-#nltk.download()
-
-# In[311]:
-
-
-
-
-
-
-
-# In[771]:
-
+# On affecte à la valeurs stop_words, les stopwords en anglais
 
 stop_words = set(stopwords.words("english"))
 
-# add words that aren't in the NLTK stopwords list
+# On ajoute de nouveaux stopwords qui ne sont pas encore dans la liste
 new_stopwords = ['None', 'rififi', 'krzysztof', 'also', 'good', 'best', 'however', 'long', 'x', 'still', 'go', 'see',
                  'like', 'although', 'usually', 'movies', 'class', 'one', 'puzo', 'seen', 'want', 'columns', 'rows',
                  'eyes', 'movie', 'film']
 new_stopwords_list = stop_words.union(new_stopwords)
 
-print(new_stopwords_list)
+
 # # Les genres les plus fréquents
 
-# In[799]:
-
+#On affiche le graphe de nuage de mots des genres les plus fréquents
 
 wordcloud = WordCloud(background_color='white',
                       stopwords=new_stopwords_list,
@@ -1272,39 +1117,24 @@ wordcloud = WordCloud(background_color='white',
                       scale=6,
                       random_state=1).generate(" ".join(df["genre"]))
 
-plt.figure(1, figsize=(30, 30))
+plt.figure(figsize=(30, 30))
 plt.imshow(wordcloud)
 plt.axis("off")
-
 plt.show()
 
 # # Acteurs les plus fréquents
 
-# In[801]:
+#On affiche le graphe de nuage de mots des acteurs les plus fréquents
+wordcloud = WordCloud(background_color='white', stopwords=new_stopwords_list, max_words=300, max_font_size=40, scale=6, random_state=1).generate(" ".join(df["acteurs"]))
 
-
-df['acteurs'] = [(str(i).replace(" ", "")) for i in df['acteurs']]
-
-# In[802]:
-
-
-wordcloud = WordCloud(background_color='white',
-                      stopwords=new_stopwords_list,
-                      max_words=300,
-                      max_font_size=40,
-                      scale=6,
-                      random_state=1).generate(" ".join(df["acteurs"]))
-
-plt.figure(1, figsize=(30, 30))
+plt.figure(figsize=(30, 30))
 plt.imshow(wordcloud)
 plt.axis("off")
-
 plt.show()
 
 # ## Réalisateurs
 
-# In[777]:
-
+#On affiche le graphe de nuage de mots des réalisateurs les plus fréquents
 
 wordcloud = WordCloud(background_color='white',
                       stopwords=new_stopwords_list,
@@ -1313,18 +1143,13 @@ wordcloud = WordCloud(background_color='white',
                       scale=6,
                       random_state=1).generate(" ".join(df["réalisateur"]))
 
-plt.figure(1, figsize=(30, 30))
+plt.figure(figsize=(30, 30))
 plt.imshow(wordcloud)
 plt.axis("off")
-
 plt.show()
 
 # ## Story line
-
-
-# In[768]:
-
-
+#On affiche le graphe de nuage de mots des mots utilisés fréquemment dans les storyline.
 wordcloud = WordCloud(background_color='white',
                       stopwords=new_stopwords_list,
                       max_words=300,
@@ -1335,26 +1160,15 @@ wordcloud = WordCloud(background_color='white',
 plt.figure(1, figsize=(30, 30))
 plt.imshow(wordcloud)
 plt.axis("off")
-
 plt.show()
 
 # ## Users reviews
-
-# In[772]:
-
-
-wordcloud = WordCloud(background_color='white',
-                      stopwords=new_stopwords_list,
-                      max_words=300,
-                      max_font_size=40,
-                      scale=6,
-                      random_state=1).generate(" ".join(df["users_reviews"]))
+#On affiche le graphe de nuage de mots des mots utilisés fréquemment dans les commentaires des utilisateurs.
+wordcloud = WordCloud(background_color='white', stopwords=new_stopwords_list, max_words=300, max_font_size=40, scale=6, random_state=1).generate(" ".join(df["users_reviews"]))
 
 plt.figure(1, figsize=(30, 30))
 plt.imshow(wordcloud)
 plt.axis("off")
-
 plt.show()
 
-# In[ ]:
 
