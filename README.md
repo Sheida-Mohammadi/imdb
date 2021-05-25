@@ -11,7 +11,7 @@ We decided to collect data from the IMDB website : https://www.imdb.com
 
 We decided to work on the top 250 rated moovie section.
 
-## Our main type of Data collected was :
+## Our main types of Data collected was :
 - Date of publication
 - Rating of the moovie
 - Duration of the moovie
