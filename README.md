@@ -1,5 +1,5 @@
 # ScrapingIMDB
-TP Data tools scraping IMDB
+## TP Data tools scraping IMDB
 
 This project resume our work that we had to to for a project in our Data Tools class
 The purpose of this porject was to learn how to extract and use the data from a HTML format. We decided to work on the IMDB webite, this site is a reference in the moovie sector.
@@ -17,8 +17,19 @@ Our main type of Data collected from this section was :
 You will see some beautifull visualisation of each type of Data
 You willget an idea of what can be the next big moovie !!
 
-To lunch the code on your computer you just have to :
-'''
+## To lunch the code on your computer you just have to :
+```
 git clone https://github.com/Sheida-Mohammadi/imdb.git
 
-'''
+```
+Lunch the virtual environment
+```
+virtualenv env
+source env/bin/activate
+```
+Download all the librairies
+```
+pip3 install -r requirements.txt
+```
+And then just press play ! 
+
